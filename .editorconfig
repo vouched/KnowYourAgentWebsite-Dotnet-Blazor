@@ -1,0 +1,124 @@
+# top-most EditorConfig file
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{cs,csx,razor}]
+indent_style = tab
+indent_size = 4
+
+[*.{csproj,props,targets,slnx,xml,config,nuspec,resx}]
+indent_size = 2
+
+[*.{json,yml,yaml}]
+indent_size = 2
+
+[*.{css,js,html}]
+indent_style = tab
+indent_size = 4
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.cs]
+# Organize usings
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+# Namespaces
+csharp_style_namespace_declarations = file_scoped:error
+dotnet_diagnostic.IDE0161.severity = error
+
+# Remove explicit default access modifiers
+dotnet_style_require_accessibility_modifiers = omit_if_default:error
+dotnet_diagnostic.IDE0040.severity = error
+
+# Modifier preferences
+csharp_prefer_static_local_function = true:suggestion
+csharp_preferred_modifier_order = public,private,protected,internal,file,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,required,volatile,async:error
+
+# var / expression preferences
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = true:suggestion
+csharp_style_expression_bodied_methods = when_on_single_line:suggestion
+csharp_style_expression_bodied_properties = true:suggestion
+csharp_style_prefer_primary_constructors = true:suggestion
+csharp_prefer_braces = when_multiline:suggestion
+
+# Pattern matching / null checks
+dotnet_style_object_initializer = true:suggestion
+dotnet_style_collection_initializer = true:suggestion
+dotnet_style_coalesce_expression = true:suggestion
+dotnet_style_null_propagation = true:suggestion
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:suggestion
+csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
+csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
+csharp_style_inlined_variable_declaration = true:suggestion
+csharp_style_throw_expression = true:suggestion
+dotnet_style_prefer_collection_expression = when_types_loosely_match:suggestion
+
+# Unused usings are errors so the codebase stays clean
+dotnet_diagnostic.IDE0005.severity = error
+
+# Naming rules
+dotnet_diagnostic.IDE1006.severity = error
+
+## Instance fields are _camelCase
+dotnet_naming_rule.instance_fields_should_be_camel_case.severity = error
+dotnet_naming_rule.instance_fields_should_be_camel_case.symbols = instance_fields
+dotnet_naming_rule.instance_fields_should_be_camel_case.style = underscore_camel_case_style
+dotnet_naming_symbols.instance_fields.applicable_kinds = field
+dotnet_naming_symbols.instance_fields.applicable_accessibilities = private, protected, protected_internal, private_protected
+
+## Private static fields are _camelCase
+dotnet_naming_rule.static_fields_should_be_camel_case.severity = error
+dotnet_naming_rule.static_fields_should_be_camel_case.symbols = static_fields
+dotnet_naming_rule.static_fields_should_be_camel_case.style = underscore_camel_case_style
+dotnet_naming_symbols.static_fields.applicable_kinds = field
+dotnet_naming_symbols.static_fields.required_modifiers = static
+dotnet_naming_symbols.static_fields.applicable_accessibilities = private, protected, protected_internal, private_protected
+
+## Constants are PascalCase
+dotnet_naming_rule.constants_should_be_pascal_case.severity = error
+dotnet_naming_rule.constants_should_be_pascal_case.symbols = constant_fields
+dotnet_naming_rule.constants_should_be_pascal_case.style = pascal_case_style
+dotnet_naming_symbols.constant_fields.applicable_kinds = field
+dotnet_naming_symbols.constant_fields.required_modifiers = const
+
+dotnet_naming_style.underscore_camel_case_style.capitalization = camel_case
+dotnet_naming_style.underscore_camel_case_style.required_prefix = _
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
+# Async correctness
+dotnet_diagnostic.CS4014.severity = error
+dotnet_diagnostic.CS1998.severity = error
+dotnet_diagnostic.CA2012.severity = error
+dotnet_diagnostic.CA2016.severity = error
+dotnet_diagnostic.CA1068.severity = error
+
+# Disposal correctness
+dotnet_diagnostic.CA1001.severity = error
+dotnet_diagnostic.CA1063.severity = error
+dotnet_diagnostic.CA2000.severity = warning
+
+# CA1515: ASP.NET Core apps are not libraries; public types are required by Razor components and WebApplicationFactory
+dotnet_diagnostic.CA1515.severity = none
+
+# CA1848/CA1873: LoggerMessage source generators are used where logging is on a hot path
+dotnet_diagnostic.CA1848.severity = suggestion
+
+# CA2007: ConfigureAwait is unnecessary in ASP.NET Core (no SynchronizationContext)
+dotnet_diagnostic.CA2007.severity = none
+
+[tests/**.cs]
+# CA1707: NUnit test names use underscores for readability
+dotnet_diagnostic.CA1707.severity = none
+# CA1861: Inline expected values read better in assertions than static fields
+dotnet_diagnostic.CA1861.severity = none

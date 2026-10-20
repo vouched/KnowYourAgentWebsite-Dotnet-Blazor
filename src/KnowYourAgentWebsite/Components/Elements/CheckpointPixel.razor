@@ -1,0 +1,11 @@
+@*
+	Checkpoint Detect browser pixel: adds client-side signals (headless browsers, automation frameworks) to the server-side verdict.
+	It only renders once a Project ID is configured, so forks never report traffic to someone else's project.
+*@
+@inject IOptions<CheckpointCredentials> Credentials
+@inject IOptions<CheckpointPixelOptions> PixelOptions
+
+@if (PixelOptions.Value.Enabled && Credentials.Value.HasProjectId)
+{
+	<script async src="@PixelOptions.Value.ScriptUri" data-project-id="@Credentials.Value.ProjectId" data-debug="@(PixelOptions.Value.Debug ? "true" : null)"></script>
+}

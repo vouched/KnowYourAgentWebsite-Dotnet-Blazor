@@ -1,0 +1,22 @@
+@inject IOptions<SiteOptions> SiteOptions
+
+<header class="site-header">
+	<div class="container site-header__inner">
+		<a class="brand" href="/">
+			<BrandMark Size="30" />
+			<span class="brand__text">
+				<span class="brand__name">@SiteOptions.Value.Name</span>
+				<span class="brand__by">Checkpoint by Vouched</span>
+			</span>
+		</a>
+
+		<nav class="site-nav" aria-label="Resources">
+			<a href="@VouchedLinks.DotNetDocs" rel="noopener">Docs</a>
+			<a href="@SiteOptions.Value.RepositoryUri" rel="noopener">GitHub</a>
+			<a class="btn btn--ghost btn--sm" href="@VouchedLinks.Dashboard" target="_blank" rel="noopener">
+				Dashboard
+				<Icon Name="external" Size="14" />
+			</a>
+		</nav>
+	</div>
+</header>

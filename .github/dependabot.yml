@@ -1,0 +1,41 @@
+# Keeps NuGet packages, the .NET SDK and GitHub Actions up to date.
+# https://docs.github.com/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      # Checkpoint updates can change how traffic is classified, so they always get their own PR;
+      # the detection tests in CI will show exactly what changed
+      microsoft:
+        patterns:
+          - Microsoft.*
+          - System.*
+      testing:
+        patterns:
+          - NUnit*
+          - AngleSharp
+
+  - package-ecosystem: dotnet-sdk
+    directory: /
+    schedule:
+      interval: weekly
+    # global.json rolls forward to the latest installed feature band and patch, so only new major versions need a PR
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - "*"

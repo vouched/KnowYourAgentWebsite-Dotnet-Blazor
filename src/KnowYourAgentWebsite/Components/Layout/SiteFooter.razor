@@ -1,0 +1,11 @@
+@inject IOptions<SiteOptions> SiteOptions
+
+<footer class="site-footer">
+	<div class="container site-footer__inner">
+		<p>An open-source ASP.NET Core sample for Checkpoint by Vouched, released under the MIT License.</p>
+		<nav class="site-footer__links" aria-label="Footer">
+			<a href="@VouchedLinks.DotNetDocs" rel="noopener">Checkpoint .NET docs</a>
+			<a href="@SiteOptions.Value.RepositoryUri" rel="noopener">Source on GitHub</a>
+		</nav>
+	</div>
+</footer>

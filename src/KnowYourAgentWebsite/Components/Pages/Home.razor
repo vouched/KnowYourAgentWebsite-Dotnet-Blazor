@@ -1,0 +1,376 @@
+@page "/"
+
+<PageTitle>@SiteOptions.Value.Name · Checkpoint by Vouched sample</PageTitle>
+
+<section class="intro" aria-labelledby="intro-title">
+	<div class="container">
+		<p class="kicker">ASP.NET Core sample · Checkpoint Detect</p>
+		<h1 id="intro-title" class="intro__title">See AI agents arrive in your Vouched dashboard</h1>
+		<p class="lead">
+			This app runs the Checkpoint middleware on every request. Connect your project, send it a burst of simulated
+			AI agent and bot traffic, then open your dashboard to watch it arrive.
+		</p>
+	</div>
+</section>
+
+<div class="container">
+	<ol class="steps">
+		<li class="step @StepClass(isComplete: HasProjectId && !_isRestartPending, isCurrent: !HasProjectId || _isRestartPending)">
+			<span class="step__marker" aria-hidden="true">
+				@if (HasProjectId && !_isRestartPending)
+				{
+					<Icon Name="check" Size="16" />
+				}
+				else
+				{
+					<text>1</text>
+				}
+			</span>
+
+			<section class="step__panel" id="connect" aria-labelledby="connect-title">
+				<header class="step__header">
+					<h2 id="connect-title" class="step__title">Connect your Vouched project</h2>
+					@if (_isRestartPending)
+					{
+						<span class="pill pill--info" data-testid="connection-status"><span class="pill__dot"></span>Restarting</span>
+					}
+					else if (Credentials.CanReportServerDetections)
+					{
+						<span class="pill pill--success" data-testid="connection-status"><span class="pill__dot"></span>Configured</span>
+					}
+					else if (HasProjectId)
+					{
+						<span class="pill pill--info" data-testid="connection-status"><span class="pill__dot"></span>Pixel only</span>
+					}
+					else
+					{
+						<span class="pill pill--warning" data-testid="connection-status"><span class="pill__dot"></span>Not configured</span>
+					}
+				</header>
+
+				@if (_isRestartPending)
+				{
+					<div class="restart" role="status" data-restart-from="@HostInstance.Id" data-status-url="@SetupEndpoints.StatusPath.TrimStart('/')" data-testid="restart-panel">
+						<span class="spinner" aria-hidden="true"></span>
+						<div>
+							<p class="restart__title">Saved. Restarting the app to apply your keys…</p>
+							<p class="restart__text">This page reloads by itself in a few seconds.</p>
+							<p class="restart__timeout">Taking a while? Stop the app and run it again. Your keys are already saved.</p>
+						</div>
+					</div>
+				}
+				else if (HasProjectId)
+				{
+					<dl class="facts">
+						<div class="facts__item">
+							<dt>Project ID</dt>
+							<dd><code data-testid="project-id">@Credentials.ProjectId</code></dd>
+						</div>
+						<div class="facts__item">
+							<dt>API key</dt>
+							<dd>
+								@if (Credentials.HasApiKey)
+								{
+									<code data-testid="api-key-hint">@Credentials.ApiKeyHint</code>
+								}
+								else
+								{
+									<span class="facts__empty" data-testid="api-key-hint">Not added</span>
+								}
+							</dd>
+						</div>
+					</dl>
+
+					@if (!Credentials.HasApiKey)
+					{
+						<p class="step__text step__text--below" data-testid="pixel-only-note">
+							The Checkpoint pixel on this page is reporting your visits to your dashboard. Add an API key to report
+							this app's server-side detections too, like the simulated traffic in step 2.
+							<a href="@ReadmeUri("3-create-an-api-key-optional")" target="_blank" rel="noopener">How to create one</a>
+						</p>
+					}
+
+					@if (_canSaveKeys)
+					{
+						<details class="disclosure" open="@_isEditingKeys">
+							<summary>@(Credentials.HasApiKey ? "Use a different project" : "Add your API key")</summary>
+							@KeysForm
+						</details>
+					}
+				}
+				else if (_canSaveKeys)
+				{
+					<p class="step__text">
+						Create a free project at <a href="@VouchedLinks.SignUp" target="_blank" rel="noopener">kya.vouched.id</a>, open
+						<strong>Installations</strong> and copy your <strong>Project ID</strong>. That's all the Checkpoint pixel needs.
+						Add an <strong>API key</strong> (it starts with <code>sk_</code>) too, so this app's middleware can report the
+						simulated traffic in step 2. <a href="@ReadmeUri("get-your-project-id-and-api-key")" target="_blank" rel="noopener">Step-by-step instructions</a>
+					</p>
+					@KeysForm
+				}
+				else
+				{
+					<p class="step__text">
+						Add your keys with <code>dotnet user-secrets</code> or environment variables, then restart the app.
+						The README walks through both.
+					</p>
+				}
+
+				<p class="step__source">
+					<Icon Name="code" Size="14" />
+					<span>
+						<a href="@SourceUri("src/KnowYourAgentWebsite/WebsiteApplication.cs")" rel="noopener">WebsiteApplication.cs</a>
+						adds Checkpoint with <code>AddCheckpoint()</code> and <code>UseCheckpoint()</code>, and reads your keys from configuration.
+					</span>
+				</p>
+			</section>
+		</li>
+
+		<li class="step @StepClass(isComplete: IsTrafficSent, isCurrent: HasProjectId && !_isRestartPending)">
+			<span class="step__marker" aria-hidden="true">
+				@if (IsTrafficSent)
+				{
+					<Icon Name="check" Size="16" />
+				}
+				else
+				{
+					<text>2</text>
+				}
+			</span>
+
+			<section class="step__panel" id="simulate" aria-labelledby="simulate-title">
+				<header class="step__header">
+					<h2 id="simulate-title" class="step__title">Send simulated traffic</h2>
+				</header>
+
+				<p class="step__text" data-testid="simulate-instructions">
+					@if (HasProjectId && !Credentials.HasApiKey)
+					{
+						<text>
+							Each visitor below sends one request through the Checkpoint middleware in this app, using the user agent it
+							really sends. Checkpoint classifies it like any live request and reports it to your dashboard. This step
+							requires an API key, so add yours in step 1 first.
+						</text>
+					}
+					else
+					{
+						<text>
+							Each visitor below sends one request through the Checkpoint middleware in this app, using the user agent it
+							really sends. Checkpoint classifies it like any live request and reports it to your dashboard.
+						</text>
+					}
+				</p>
+
+				<div class="simulate">
+					@if (!HasProjectId)
+					{
+						<p class="hint">Connect your project in step 1 first, so the traffic has somewhere to go.</p>
+					}
+					else if (_canUseDeveloperTools)
+					{
+						<form method="post" @formname="@SimulateFormName" @onsubmit="SendTrafficAsync" data-enhance>
+							<AntiforgeryToken />
+							<button type="submit" class="btn btn--primary btn--lg" data-busy-label="Sending…" data-testid="send-traffic">
+								<Icon Name="zap" Size="18" />
+								<span class="btn__label">@(_report is null ? "Send simulated traffic" : "Send again")</span>
+							</button>
+						</form>
+					}
+					else
+					{
+						<p class="hint">Run this sample on your own machine with <code>dotnet run</code> to send simulated traffic.</p>
+					}
+
+					@if (_isSimulatorBusy)
+					{
+						<p class="alert alert--info" role="status">Another simulation is still running. Try again in a moment.</p>
+					}
+					else if (_report is { } report)
+					{
+						switch (report.Delivery)
+						{
+							case DeliveryStatus.Delivered:
+								<p class="alert alert--success" role="status" data-testid="delivery-status">
+									<Icon Name="check" Size="18" />
+									<span>Delivered @report.ReportedCount detections to project <code>@Credentials.ProjectId</code>.</span>
+								</p>
+								break;
+
+							case DeliveryStatus.LocalOnly:
+								<p class="alert alert--warning" role="status" data-testid="delivery-status">
+									<Icon Name="lock" Size="18" />
+									<span>Sending simulated traffic to your dashboard requires an API key. Add yours in step 1, then send again.</span>
+								</p>
+								break;
+
+							case DeliveryStatus.Rejected:
+								<p class="alert alert--warning" role="alert" data-testid="delivery-status">
+									<Icon Name="alert" Size="18" />
+									<span>Vouched didn't accept @report.DroppedCount of @report.ReportedCount detections. Double-check your Project ID and API key in step 1, then send again.</span>
+								</p>
+								break;
+
+							case DeliveryStatus.RetryLater:
+								<p class="alert alert--info" role="status" data-testid="delivery-status">
+									<Icon Name="refresh" Size="18" />
+									<span>Vouched asked Checkpoint to retry @report.HeldCount detections later. Send again in a moment to deliver them.</span>
+								</p>
+								break;
+
+							case DeliveryStatus.InProgress:
+								<p class="alert alert--info" role="status" data-testid="delivery-status">
+									<Icon Name="refresh" Size="18" />
+									<span>Sent @report.ReportedCount detections. Vouched is still receiving them, so give your dashboard a minute.</span>
+								</p>
+								break;
+
+							default:
+								<p class="alert alert--warning" role="status" data-testid="delivery-status">
+									<Icon Name="alert" Size="18" />
+									<span>Checkpoint didn't report any of these visits. Check <code>Checkpoint:SkipPaths</code> and <code>Checkpoint:IncludePaths</code> in appsettings.json.</span>
+								</p>
+								break;
+						}
+					}
+				</div>
+
+				@foreach (var (kind, heading) in _visitorGroups)
+				{
+					<h3 class="visitors__heading">@heading</h3>
+					<ul class="visitors @(_report is null ? null : "visitors--sent")">
+						@foreach (var visitor in SimulatedVisitor.All.Where(visitor => visitor.Kind == kind))
+						{
+							var visit = _report?.For(visitor);
+							<li class="visitor" data-testid="visitor-@visitor.Id">
+								<span class="visitor__icon visitor__icon--@(kind is VisitorKind.AiAgent ? "agent" : "bot")">
+									<Icon Name="@(kind is VisitorKind.AiAgent ? "sparkles" : "bot")" Size="18" />
+								</span>
+								<div class="visitor__body">
+									<p class="visitor__name">@visitor.Name <span class="visitor__operator">@visitor.Operator</span></p>
+									<p class="visitor__description">@visitor.Description</p>
+									<code class="visitor__token" title="@visitor.UserAgent">@visitor.Token</code>
+								</div>
+								<div class="visitor__result">
+									@if (visit is null)
+									{
+										<span class="badge badge--muted">Not sent</span>
+									}
+									else
+									{
+										<span class="badge badge--@VerdictTone(visit)" data-testid="verdict">@VerdictLabel(visit)</span>
+										<span class="visitor__detail" data-testid="detail">@VerdictDetail(visit)</span>
+									}
+								</div>
+							</li>
+						}
+					</ul>
+				}
+
+				<ul class="notes">
+					<li>
+						Checkpoint recognizes these visitors by the user agent each one declares. That tells it the agent's name, not
+						who really sent the request; agents that sign their requests can be verified cryptographically.
+					</li>
+					<li>
+						Try this: change <code>Checkpoint:OnAgentDetected</code> in appsettings.json from <code>Log</code> to
+						<code>Block</code>, restart the app and send again to see which visitors Checkpoint blocks.
+					</li>
+				</ul>
+
+				<p class="step__source">
+					<Icon Name="code" Size="14" />
+					<span>
+						<a href="@SourceUri("src/KnowYourAgentWebsite/Simulation/TrafficSimulator.cs")" rel="noopener">TrafficSimulator.cs</a>
+						runs each visit through <code>UseCheckpoint()</code> and reads the verdict with <code>HttpContext.GetCheckpointResult()</code>.
+					</span>
+				</p>
+			</section>
+		</li>
+
+		<li class="step @StepClass(isComplete: false, isCurrent: IsTrafficSent)">
+			<span class="step__marker" aria-hidden="true">3</span>
+
+			<section class="step__panel" id="dashboard" aria-labelledby="dashboard-title">
+				<header class="step__header">
+					<h2 id="dashboard-title" class="step__title">Watch it arrive in your dashboard</h2>
+				</header>
+
+				<p class="step__text" data-testid="dashboard-instructions">
+					@if (!HasProjectId)
+					{
+						<text>
+							Open your project's <strong>Activity</strong> feed under <strong>Detect</strong>. Every simulated visit shows up
+							there with its class, confidence and agent name, usually within a minute, along with your own visit to this page.
+						</text>
+					}
+					else if (Credentials.HasApiKey)
+					{
+						<text>
+							Open <strong>Activity</strong> under <strong>Detect</strong> for project <code>@Credentials.ProjectId</code>.
+							Every simulated visit shows up there with its class, confidence and agent name, usually within a minute, along
+							with your own visit to this page.
+						</text>
+					}
+					else
+					{
+						<text>
+							Open <strong>Activity</strong> under <strong>Detect</strong> for project <code>@Credentials.ProjectId</code>.
+							Your own visit to this page shows up there within a minute as a human visit, reported by the Checkpoint pixel.
+						</text>
+					}
+				</p>
+
+				<a class="btn @(IsTrafficSent ? "btn--primary" : "btn--ghost")" href="@VouchedLinks.Dashboard" target="_blank" rel="noopener" data-testid="dashboard-link">
+					Open your Checkpoint dashboard
+					<Icon Name="external" Size="16" />
+				</a>
+
+				@if (HasProjectId)
+				{
+					<ul class="notes">
+						<li data-testid="dashboard-troubleshooting">
+							Not there? Make sure your dashboard is showing the project with this ID; each project's ID is under
+							<strong>Installations</strong>. Then widen Activity's time range and clear its filters.
+						</li>
+					</ul>
+				}
+			</section>
+		</li>
+	</ol>
+</div>
+
+@code {
+	RenderFragment KeysForm => @<EditForm FormName="@ConnectFormName" Model="Form" OnValidSubmit="SaveKeysAsync" Enhance class="form" novalidate>
+		<DataAnnotationsValidator />
+
+		<div class="form__fields">
+			<div class="field">
+				<label for="project-id">Project ID</label>
+				<InputText id="project-id" @bind-Value="Form!.ProjectId" autocomplete="off" spellcheck="false" placeholder="Paste your Project ID" />
+				<ValidationMessage For="() => Form!.ProjectId" />
+			</div>
+
+			<div class="field">
+				<label for="api-key">API key <span class="field__optional">Optional</span></label>
+				<InputText id="api-key" type="password" @bind-Value="Form!.ApiKey" autocomplete="off" spellcheck="false" placeholder="sk_…" />
+				<ValidationMessage For="() => Form!.ApiKey" />
+			</div>
+		</div>
+
+		@if (_saveError is not null)
+		{
+			<p class="alert alert--warning" role="alert">@_saveError</p>
+		}
+
+		<div class="form__actions">
+			<button type="submit" class="btn btn--primary">
+				Save and restart
+				<Icon Name="refresh" Size="16" />
+			</button>
+			<p class="form__note">
+				<Icon Name="lock" Size="14" />
+				<span>Saved to <code title="@UserSecretsStore.FilePath">@UserSecretsStore.DisplayPath</code>, outside this repository.</span>
+			</p>
+		</div>
+	</EditForm>;
+}
