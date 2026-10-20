@@ -49,15 +49,77 @@ The API key is optional:
 
 ## Run it
 
-You need the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) and a trusted development certificate (`dotnet dev-certs https --trust`).
+New to .NET? No problem. These steps start from a computer with nothing installed. If you already have the .NET 10 SDK, skip to [step 2](#2-download-the-code).
+
+### 1. Install the prerequisites
+
+You need two free tools, and a terminal to type commands into: **Terminal** on macOS, **Windows Terminal** or **PowerShell** on Windows, or the terminal built into [Visual Studio Code](https://code.visualstudio.com).
+
+**The .NET 10 SDK** builds and runs .NET apps, and gives you the `dotnet` command used below. This sample needs version 10 specifically (see [`global.json`](global.json)):
+
+| Your computer | How to install the .NET 10 SDK |
+| --- | --- |
+| Windows | Download and run the **SDK** installer (x64, or Arm64 for Arm devices) from [dotnet.microsoft.com/download/dotnet/10.0](https://dotnet.microsoft.com/download/dotnet/10.0), or run `winget install Microsoft.DotNet.SDK.10` |
+| macOS | Download and run the **SDK** installer from [dotnet.microsoft.com/download/dotnet/10.0](https://dotnet.microsoft.com/download/dotnet/10.0): Arm64 for Apple silicon, x64 for Intel Macs |
+| Linux | Follow [Install .NET on Linux](https://learn.microsoft.com/dotnet/core/install/linux), which covers the package managers of each distribution |
+
+**Git** downloads the code. Many computers already have it:
+
+| Your computer | How to install Git |
+| --- | --- |
+| Windows | Download and run the installer from [git-scm.com/downloads](https://git-scm.com/downloads), or run `winget install --id Git.Git -e` |
+| macOS | Run `xcode-select --install`, which installs Apple's developer tools, Git included |
+| Linux | Use your package manager, for example `sudo apt install git` |
+
+When the installers finish, **close your terminal and open a new one**, so it picks up the new commands. Then check that everything is ready:
+
+```bash
+dotnet --version
+git --version
+```
+
+You should see a version that starts with `10.0` for .NET, and any version number for Git.
+
+Finally, trust the HTTPS development certificate that the .NET SDK installed, so your browser accepts `https://localhost`. You only need to do this once per computer:
+
+```bash
+dotnet dev-certs https --trust
+```
+
+Windows and macOS ask you to confirm; macOS asks for your password. On Linux, `--trust` doesn't work on every distribution, so see [Trust the HTTPS certificate on Linux](https://learn.microsoft.com/aspnet/core/security/enforcing-ssl#trust-https-certificate-on-linux), or use the HTTP-only option in step 3.
+
+> [!TIP]
+> Rather not install Git? On this repository's GitHub page, click **Code**, then **Download ZIP**, unzip it and open a terminal in the unzipped folder. Then skip the `git clone` and `cd` commands below.
+
+### 2. Download the code
 
 ```bash
 git clone https://github.com/TheCodeTraveler/KnowYourAgentWebsite-Dotnet-Blazor.git
 cd KnowYourAgentWebsite-Dotnet-Blazor
+```
+
+### 3. Start the app
+
+```bash
 dotnet run --project src/KnowYourAgentWebsite
 ```
 
-Open **https://localhost:7273** and follow the three steps on the page:
+The first run downloads the app's NuGet packages and builds it, which takes a minute. When you see `Application started`, open **https://localhost:7273** in your browser:
+
+```text
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: https://localhost:7273
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5272
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+```
+
+To stop the app, click into the terminal and press **Ctrl+C**. Prefer an IDE? Open `KnowYourAgentWebsite.slnx` in Visual Studio, Visual Studio Code with the C# Dev Kit, or Rider, and press **F5**.
+
+Can't trust the development certificate? Run `dotnet run --project src/KnowYourAgentWebsite --launch-profile http` instead, and open **http://localhost:5272**.
+
+### 4. Follow the three steps on the page
 
 1. **Connect your Vouched project.** Paste your Project ID, and your API key if you have it. The app saves them to your [.NET user secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets) and restarts itself to apply them.
 2. **Send simulated traffic.** This step requires an API key. One button sends a request from ChatGPT, Claude, Perplexity, GPTBot, ClaudeBot, Googlebot, Headless Chrome, curl and a Python script through the Checkpoint middleware, shows how Checkpoint classified each one, and reports every visit to your dashboard.
@@ -76,6 +138,14 @@ Prefer the command line? These write to the same user-secrets file. The second o
 dotnet user-secrets set "Checkpoint:ProjectId" "<your project id>" --project src/KnowYourAgentWebsite
 dotnet user-secrets set "Checkpoint:ApiKey" "<your api key>" --project src/KnowYourAgentWebsite
 ```
+
+### If something goes wrong
+
+- **`dotnet` or `git` is "not recognized" or "command not found".** Close your terminal (or your IDE) and open it again, so it picks up the newly installed tools. If that doesn't help, restart your computer.
+- **"A compatible .NET SDK was not found".** This sample needs the .NET 10 SDK, even if you have a newer or older one. Install it as described above; .NET SDKs install side by side.
+- **Your browser warns that the connection isn't private.** Run `dotnet dev-certs https --trust`, then restart your browser.
+- **"Address already in use".** Another app, maybe another copy of this one, is using port 7273 or 5272. Stop it, or change the ports in [`launchSettings.json`](src/KnowYourAgentWebsite/Properties/launchSettings.json).
+- **Nothing shows up in your dashboard.** See [Not seeing traffic in your dashboard?](#not-seeing-traffic-in-your-dashboard)
 
 ### Not seeing traffic in your dashboard?
 
