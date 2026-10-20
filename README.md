@@ -65,6 +65,8 @@ Open **https://localhost:7273** and follow the three steps on the page:
 
 ![Step 1: paste your Project ID and, optionally, your API key](docs/images/connect-your-project.png)
 
+![Step 3: the simulated visits in your dashboard's Activity feed, with the Python script's visit open to show how Checkpoint identified it](docs/images/dashboard-activity.png)
+
 > [!NOTE]
 > Saving keys and sending traffic only work when the app runs in the `Development` environment and you browse it from the same machine. A deployed copy never exposes them, and they refuse requests from dev tunnels and reverse proxies that add forwarding headers. Like any app running in `Development`, don't expose it to the internet.
 
