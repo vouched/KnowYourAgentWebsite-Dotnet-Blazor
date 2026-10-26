@@ -8,7 +8,7 @@ KYA-Agent: ChatGPT
 
 Those headers came back from a plain ASP.NET Core app when ChatGPT asked it for a page, a few minutes after we added [Vouched KYA](https://kya.vouched.id) to it. Without them, a request from an AI agent browsing for one of its users looks like any other `GET`.
 
-In this post, we'll add Detect, Vouched KYA's free tier, to an ASP.NET Core app, catch a few AI agents in the act, and then use the verdict in our own code.
+In this post, we'll add Detect, Vouched KYA's free tier, to an ASP.NET Core app and catch a few AI agents in the act.
 
 ## How Detect works
 
@@ -22,7 +22,7 @@ By default, it only observes: it never blocks a request. And yes, we'll see the 
 
 ## What we'll need
 
-- An ASP.NET Core app on .NET 8, 9 or 10
+- An ASP.NET Core app on .NET 8 or higher
 - A free [Vouched KYA account](https://kya.vouched.id/signup) with a project, plus that project's **Project ID** and an **API key** (it starts with `sk_`). The [Credentials docs](https://kya.vouched.id/docs/credentials) show where to find both.
 
 ## Add Detect in three steps
@@ -111,44 +111,10 @@ This time, it's `KYA-Class: Bot` and `KYA-Agent: GPTBot`. Even a plain `curl htt
 
 Within a minute, all three requests show up in our [Vouched KYA dashboard](https://kya.vouched.id/dashboard) under **Detect → Activity**.
 
-## Use the verdict in our code
+![The Detect → Activity page in the Vouched KYA dashboard, listing AI agents and bots](docs/images/dashboard-activity.png)
 
-The headers are great for debugging, but our code can read the same verdict anywhere it has an `HttpContext`. Let's add an endpoint that tells each visitor how Vouched KYA classified them:
+## Conclusion
 
-```csharp
-using Checkpoint.AspNetCore;
+Our ASP.NET Core app now knows whether each request came from a person, a crawler or an AI agent browsing for someone. All it took was one NuGet package and three lines of code, and the complete code is in the [open-source sample](https://github.com/TheCodeTraveler/KnowYourAgentWebsite-Dotnet-Blazor).
 
-app.MapGet("/whoami", (HttpContext context) =>
-{
-    // Paths listed in Checkpoint:SkipPaths are never classified
-    if (context.WasCheckpointSkipped() || context.GetCheckpointResult() is not { } result)
-        return Results.Ok(new { verdict = "not classified" });
-
-    return Results.Ok(new
-    {
-        verdict = result.DetectionClass?.Type.ToString(),
-        agent = result.DetectedAgent?.Name,
-        confidence = Math.Round(result.Confidence),
-    });
-});
-```
-
-Calling `/whoami` with ChatGPT's user agent returns:
-
-```json
-{"verdict":"AiAgent","agent":"ChatGPT","confidence":100}
-```
-
-`GetCheckpointResult()` works the same way in controllers, Razor Pages and statically rendered Blazor components, so we can log the verdict, add it to our telemetry, or handle AI agents differently.
-
-## Test it like the rest of our pipeline
-
-Because the detection engine runs in-process, we can test it with [`WebApplicationFactory`](https://learn.microsoft.com/aspnet/core/test/integration-tests), no network required. The sample's [`WebsiteFactory`](https://github.com/TheCodeTraveler/KnowYourAgentWebsite-Dotnet-Blazor/blob/main/tests/KnowYourAgentWebsite.Tests/Infrastructure/WebsiteFactory.cs) swaps Vouched's API client for a recording fake, so tests never reach our dashboard, and its [`CheckpointDetectionTests`](https://github.com/TheCodeTraveler/KnowYourAgentWebsite-Dotnet-Blazor/blob/main/tests/KnowYourAgentWebsite.Tests/Detection/CheckpointDetectionTests.cs) pin how AI agents, crawlers, scripts and a real Chrome browser are classified. Let's copy that pattern, and the next time Dependabot bumps `KyaOs.Checkpoint`, CI will tell us if a verdict changed.
-
-## Take it further with the sample
-
-The [open-source sample](https://github.com/TheCodeTraveler/KnowYourAgentWebsite-Dotnet-Blazor) behind this post goes one step further. Run it, paste your Project ID and API key into its home page, then click **Send simulated traffic** to send ChatGPT, Claude, Perplexity, GPTBot, ClaudeBot, Googlebot, Headless Chrome, curl and a Python script through Detect and into your dashboard.
-
-Building with Next.js? There's a [Next.js sample](https://github.com/TheCodeTraveler/KnowYourAgentWebsite-JavaScript-Nextjs), too.
-
-Want the next post in this series? Subscribe to the Vouched KYA newsletter at the bottom of [kya.vouched.id](https://kya.vouched.id).
+Now it's your turn! [Create your free Vouched KYA account](https://kya.vouched.id/signup), add Detect to your ASP.NET Core app, and see which AI agents are already visiting it. 👀
