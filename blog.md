@@ -113,6 +113,8 @@ Within a minute, all three requests show up in our [Vouched KYA dashboard](https
 
 ![The Detect → Activity page in the Vouched KYA dashboard, listing AI agents and bots](docs/images/dashboard-activity.png)
 
+> [!Important] This image is a placeholder. Update this screenshot to reflect the demo results.  
+
 ## Conclusion
 
 Our ASP.NET Core app now knows whether each request came from a person, a crawler or an AI agent browsing for someone. All it took was one NuGet package and three lines of code, and the complete code is in the [open-source sample](https://github.com/TheCodeTraveler/KnowYourAgentWebsite-Dotnet-Blazor).
