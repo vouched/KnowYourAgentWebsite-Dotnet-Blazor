@@ -46,8 +46,6 @@ public sealed class WebsiteFactory : WebApplicationFactory<Program>
 
 			// Defense in depth: even if something bypassed the fake API client, it could only reach a closed local port
 			["Checkpoint:BaseUrl"] = "http://127.0.0.1:9",
-
-			// Since 1.14, Checkpoint downloads fresh vendor keys and IP ranges from feeds.kya-os.ai; use the compiled-in ones
 			["Checkpoint:EnableVendorKeyFeed"] = "false",
 		};
 
