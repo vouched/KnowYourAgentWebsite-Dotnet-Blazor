@@ -46,6 +46,7 @@ public sealed class WebsiteFactory : WebApplicationFactory<Program>
 
 			// Defense in depth: even if something bypassed the fake API client, it could only reach a closed local port
 			["Checkpoint:BaseUrl"] = "http://127.0.0.1:9",
+			["Checkpoint:EnableVendorKeyFeed"] = "false",
 		};
 
 		foreach (var (key, value) in settings ?? new Dictionary<string, string?>())

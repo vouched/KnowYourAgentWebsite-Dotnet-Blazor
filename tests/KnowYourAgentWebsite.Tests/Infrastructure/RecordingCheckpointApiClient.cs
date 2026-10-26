@@ -50,8 +50,10 @@ public sealed class RecordingCheckpointApiClient : ICheckpointApiClient, IDetect
 	public Task<PolicyConfig?> GetPolicyConfigAsync(string projectId, CancellationToken cancellationToken) =>
 		Task.FromResult(Policy);
 
+	// Answer like a project with no composed policy. Checkpoint reads null as "Vouched can't be reached" and, since 1.13,
+	// fails closed: every request gets HTTP 503 unless FailOpen is set.
 	public Task<ComposedPolicyFlags?> GetComposedPolicyFlagsAsync(string projectId, CancellationToken cancellationToken) =>
-		Task.FromResult<ComposedPolicyFlags?>(null);
+		Task.FromResult<ComposedPolicyFlags?>(new ComposedPolicyFlags { Enabled = false });
 
 	public async Task<bool> ReportDetectionAsync(DetectionEvent detectionEvent, CancellationToken cancellationToken)
 	{
