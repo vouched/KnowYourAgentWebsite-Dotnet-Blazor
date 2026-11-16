@@ -7,5 +7,5 @@ public sealed class SiteOptions
 
 	public string Name { get; set; } = "Know Your Agent";
 
-	public Uri RepositoryUri { get; set; } = new("https://github.com/TheCodeTraveler/KnowYourAgentWebsite-Dotnet-Blazor");
+	public Uri RepositoryUri { get; set; } = new("https://github.com/vouched/KnowYourAgentWebsite-Dotnet-Blazor");
 }

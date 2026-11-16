@@ -1,6 +1,6 @@
 # Know Your Agent: a Checkpoint by Vouched sample for ASP.NET Core
 
-[![Build and Test](https://github.com/TheCodeTraveler/KnowYourAgentWebsite-Dotnet-Blazor/actions/workflows/build.yml/badge.svg)](https://github.com/TheCodeTraveler/KnowYourAgentWebsite-Dotnet-Blazor/actions/workflows/build.yml)
+[![Build and Test](https://github.com/vouched/KnowYourAgentWebsite-Dotnet-Blazor/actions/workflows/build.yml/badge.svg)](https://github.com/vouched/KnowYourAgentWebsite-Dotnet-Blazor/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-453FC1.svg)](LICENSE)
 [![.NET 10](https://img.shields.io/badge/.NET-10-512BD4.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![KyaOs.Checkpoint on NuGet](https://img.shields.io/nuget/v/KyaOs.Checkpoint.svg?label=KyaOs.Checkpoint)](https://www.nuget.org/packages/KyaOs.Checkpoint)
@@ -94,7 +94,7 @@ Windows and macOS ask you to confirm; macOS asks for your password. On Linux, `-
 ### 2. Download the code
 
 ```bash
-git clone https://github.com/TheCodeTraveler/KnowYourAgentWebsite-Dotnet-Blazor.git
+git clone https://github.com/vouched/KnowYourAgentWebsite-Dotnet-Blazor.git
 cd KnowYourAgentWebsite-Dotnet-Blazor
 ```
 
